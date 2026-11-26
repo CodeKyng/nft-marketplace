@@ -1,21 +1,28 @@
-# React + TypeScript + Vite + shadcn/ui
+# The Monarch Guild frontend
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+Vite, React, Tailwind CSS, and local ShadCN-style UI components.
 
-## Adding components
+## Local setup
 
-To add components to your app, run the following command:
-
-```bash
-npx shadcn@latest add button
+```powershell
+Copy-Item .env.example .env.local
+npm install
+npm run dev
 ```
 
-This will place the ui components in the `src/components` directory.
+The Vite variables in `.env.local` configure the Base Sepolia contract links and Firebase web app. Set the same `VITE_FIREBASE_*` variables in the frontend host's build environment for a production build. Firebase web app configuration is client-side; never put Firebase Admin credentials or other server secrets in Vite variables.
 
-## Using components
+In Firebase Console, enable **Email/Password** under Authentication sign-in providers. Add the deployed website's domain under Authentication authorized domains.
 
-To use the components in your app, import them as follows:
+## Authentication flow
 
-```tsx
-import { Button } from "@/components/ui/button"
+- `/signup` creates an email/password Firebase account, saves the display name to the Firebase Auth profile, and sends an email verification message.
+- `/login` signs in and includes password reset email handling.
+- `/account` requires a signed-in session and offers verification status, resend verification, and sign out.
+- Firebase auth state is restored from local browser persistence. Signing in or creating an account routes to `/account`.
+
+## Build
+
+```powershell
+npm run build
 ```

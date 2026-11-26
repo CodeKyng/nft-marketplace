@@ -1,3 +1,4 @@
+import { useAuth } from "@/auth/AuthProvider"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -237,6 +238,7 @@ function ArtworkCard({ item, index }: { item: (typeof previews)[number]; index: 
 }
 
 export function PublicPage() {
+  const { user } = useAuth()
   return (
     <main className="min-h-svh overflow-hidden bg-[#0b0c0a] text-white">
       <header className="relative z-10 border-b border-white/[0.07]">
@@ -251,8 +253,8 @@ export function PublicPage() {
             <a href="#contracts" className="text-sm text-zinc-400 transition hover:text-white">Contracts</a>
           </nav>
           <div className="flex items-center gap-2">
-            <a href="/login" className={buttonVariants({ variant: "ghost", size: "sm", className: "hidden rounded-full px-3 sm:inline-flex" })}>Log in</a>
-            <a href="/signup" className={buttonVariants({ size: "sm", className: "h-10 rounded-full px-4" })}>Join the guild <Icon name="arrow" className="size-3.5" /></a>
+            <a href={user ? "/account" : "/login"} className={buttonVariants({ variant: "ghost", size: "sm", className: "hidden max-w-36 truncate rounded-full px-3 sm:inline-flex" })}>{user?.displayName || (user ? "Account" : "Log in")}</a>
+            <a href={user ? "/account" : "/signup"} className={buttonVariants({ size: "sm", className: "h-10 rounded-full px-4" })}>{user ? "My account" : "Join the guild"} <Icon name="arrow" className="size-3.5" /></a>
           </div>
         </div>
       </header>

@@ -74,7 +74,7 @@ export function AuthLayout({ children, alternateHref, alternateLabel, alternateA
             <Badge variant="lime">THE MONARCH GUILD</Badge>
           </div>
           {children}
-          <p className="mt-7 text-center text-xs leading-5 text-zinc-600">Account services are not connected in this preview.</p>
+          <p className="mt-7 text-center text-xs leading-5 text-zinc-600">Secure email authentication powered by Firebase.</p>
         </section>
       </div>
 

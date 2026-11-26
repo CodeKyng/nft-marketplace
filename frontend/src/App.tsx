@@ -1,10 +1,12 @@
 import { useEffect, useState, type MouseEvent } from "react"
+import { useAuth } from "@/auth/AuthProvider"
+import AccountPage from "@/pages/auth/AccountPage"
 import LoginPage from "@/pages/auth/LoginPage"
 import SignupPage from "@/pages/auth/SignupPage"
 import PublicPage from "@/pages/publicPage/PublicPage"
 
 function routeFromPath(pathname: string) {
-  if (pathname === "/login" || pathname === "/signup") {
+  if (pathname === "/login" || pathname === "/signup" || pathname === "/account") {
     return pathname
   }
 
@@ -13,12 +15,27 @@ function routeFromPath(pathname: string) {
 
 export function App() {
   const [route, setRoute] = useState(() => routeFromPath(window.location.pathname))
+  const { user, loading } = useAuth()
 
   useEffect(() => {
     const handlePopState = () => setRoute(routeFromPath(window.location.pathname))
     window.addEventListener("popstate", handlePopState)
     return () => window.removeEventListener("popstate", handlePopState)
   }, [])
+
+  useEffect(() => {
+    if (loading) return
+
+    const redirectTo = user && (route === "/login" || route === "/signup")
+      ? "/account"
+      : !user && route === "/account"
+        ? "/login"
+        : null
+
+    if (!redirectTo) return
+    window.history.replaceState({}, "", redirectTo)
+    setRoute(redirectTo)
+  }, [loading, route, user])
 
   function handleNavigation(event: MouseEvent<HTMLDivElement>) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
@@ -48,9 +65,14 @@ export function App() {
     }
   }
 
+  const waitingForAuthRedirect = !loading && user !== null && (route === "/login" || route === "/signup")
+  const accountRoute = route === "/account"
+
   return (
     <div className="min-h-svh" onClick={handleNavigation}>
-      {route === "/login" ? <LoginPage /> : route === "/signup" ? <SignupPage /> : <PublicPage />}
+      {accountRoute && (loading || !user) || waitingForAuthRedirect ? (
+        <main className="grid min-h-svh place-items-center bg-[#0b0c0a] text-sm text-zinc-400" role="status">Loading your account...</main>
+      ) : route === "/login" ? <LoginPage /> : route === "/signup" ? <SignupPage /> : accountRoute ? <AccountPage /> : <PublicPage />}
     </div>
   )
 }
