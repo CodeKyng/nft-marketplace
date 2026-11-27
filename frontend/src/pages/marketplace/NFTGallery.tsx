@@ -1,0 +1,12 @@
+import { Badge } from "@/components/ui/badge"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { MarketIcon } from "./MarketplaceUI"
+import { formatEth, type ContractNFT } from "./useContractNFTs"
+
+export function NFTGallery({ items, onAdd }: { items: ContractNFT[]; onAdd: (item: ContractNFT) => void }) {
+  if (items.length === 0) return <p className="py-12 text-center text-sm text-zinc-500">No NFTs have been minted for this contract yet.</p>
+  return <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{items.map((item) => <Card key={item.tokenId} className="group overflow-hidden border-white/[.08] bg-[#11120f] transition duration-300 hover:-translate-y-1 hover:border-red-300/20"><a href={`/nft/${item.tokenId}`} className="relative block"><div data-artwork className="relative grid aspect-[.92] place-items-center overflow-hidden bg-[#171717]">{item.image ? <img src={item.image} alt={item.name} loading="lazy" className="absolute inset-0 size-full object-cover transition duration-500 group-hover:scale-[1.03]"/> : <div className="flex flex-col items-center gap-3 text-zinc-500"><MarketIcon name="sparkle" className="size-7"/><span className="text-xs">No image in token metadata</span></div>}<Badge variant="outline" className="absolute left-3 top-3 border-white/20 bg-black/45 text-white/90 backdrop-blur">TOKEN #{item.tokenId}</Badge>{item.listing?.active && <Badge variant="red" className="absolute right-3 top-3">LISTED</Badge>}</div></a><div className="p-4"><a href={`/nft/${item.tokenId}`} className="block truncate text-sm font-medium hover:text-red-300">{item.name}</a><p className="mt-1 line-clamp-2 min-h-10 text-xs leading-5 text-zinc-500">{item.description || "Onchain NFT from The Monarch Guild."}</p><div className="mt-4 flex items-center justify-between border-t border-white/[.07] pt-3"><div><p className="text-[10px] text-zinc-600">{item.listing === null ? "LISTING STATUS" : item.listing.active ? "ONCHAIN LISTING" : "STATUS"}</p><p className="mt-1 text-sm font-medium text-red-300">{item.listing === null ? "Unavailable" : item.listing.active ? `${formatEth(item.listing.priceWei)} ETH` : "Not listed"}</p></div>{item.listing?.active ? <Button size="sm" variant="outline" onClick={() => onAdd(item)} className="rounded-full">Add to cart</Button> : <a href={`/nft/${item.tokenId}`} className={buttonVariants({ size: "sm", variant: "ghost", className: "rounded-full" })}>Details <MarketIcon name="arrow"/></a>}</div></div></Card>)}</div>
+}
+
+export default NFTGallery

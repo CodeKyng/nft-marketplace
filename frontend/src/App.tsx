@@ -1,14 +1,23 @@
 import { useEffect, useState, type MouseEvent } from "react"
 import { useAuth } from "@/auth/AuthProvider"
-import AccountPage from "@/pages/auth/AccountPage"
 import LoginPage from "@/pages/auth/LoginPage"
 import SignupPage from "@/pages/auth/SignupPage"
 import PublicPage from "@/pages/publicPage/PublicPage"
+import MarketplaceHome from "@/pages/marketplace/MarketplaceHome"
+import Shop from "@/pages/marketplace/Shop"
+import ProductDetail from "@/pages/marketplace/ProductDetail"
+import Cart from "@/pages/marketplace/Cart"
+import MyCollection from "@/pages/marketplace/MyCollection"
+import Gallery from "@/pages/marketplace/Gallery"
+import MerchShop from "@/pages/marketplace/MerchShop"
+import MerchDetail from "@/pages/marketplace/MerchDetail"
 
 function routeFromPath(pathname: string) {
-  if (pathname === "/login" || pathname === "/signup" || pathname === "/account") {
+  if (["/login", "/signup", "/marketplace", "/shop", "/gallery", "/merch", "/cart", "/collection"].includes(pathname)) {
     return pathname
   }
+  if (/^\/nft\/[^/]+$/.test(pathname)) return pathname
+  if (/^\/merch\/[^/]+$/.test(pathname)) return pathname
 
   return "/"
 }
@@ -26,15 +35,11 @@ export function App() {
   useEffect(() => {
     if (loading) return
 
-    const redirectTo = user && (route === "/login" || route === "/signup")
-      ? "/account"
-      : !user && route === "/account"
-        ? "/login"
-        : null
+    const redirectTo = user && (route === "/login" || route === "/signup") ? "/marketplace" : null
 
     if (!redirectTo) return
     window.history.replaceState({}, "", redirectTo)
-    setRoute(redirectTo)
+    window.dispatchEvent(new PopStateEvent("popstate"))
   }, [loading, route, user])
 
   function handleNavigation(event: MouseEvent<HTMLDivElement>) {
@@ -66,13 +71,26 @@ export function App() {
   }
 
   const waitingForAuthRedirect = !loading && user !== null && (route === "/login" || route === "/signup")
-  const accountRoute = route === "/account"
+  const productRoute = route.startsWith("/nft/")
+  const productId = productRoute ? decodeURIComponent(route.slice("/nft/".length)) : ""
+  const merchRoute = route.startsWith("/merch/")
+  const merchId = merchRoute ? decodeURIComponent(route.slice("/merch/".length)) : ""
 
   return (
     <div className="min-h-svh" onClick={handleNavigation}>
-      {accountRoute && (loading || !user) || waitingForAuthRedirect ? (
-        <main className="grid min-h-svh place-items-center bg-[#0b0c0a] text-sm text-zinc-400" role="status">Loading your account...</main>
-      ) : route === "/login" ? <LoginPage /> : route === "/signup" ? <SignupPage /> : accountRoute ? <AccountPage /> : <PublicPage />}
+      {waitingForAuthRedirect || (loading && (route === "/login" || route === "/signup")) ? (
+        <main className="grid min-h-svh place-items-center bg-[#0b0c0a] text-sm text-zinc-400" role="status">Loading your session...</main>
+      ) : route === "/login" ? <LoginPage />
+        : route === "/signup" ? <SignupPage />
+          : route === "/marketplace" ? <MarketplaceHome />
+              : route === "/shop" ? <Shop />
+                : route === "/gallery" ? <Gallery />
+                  : route === "/merch" ? <MerchShop />
+                  : route === "/cart" ? <Cart />
+                  : route === "/collection" ? <MyCollection />
+                    : productRoute ? <ProductDetail itemId={productId} />
+                      : merchRoute ? <MerchDetail itemId={merchId} />
+                      : <PublicPage />}
     </div>
   )
 }

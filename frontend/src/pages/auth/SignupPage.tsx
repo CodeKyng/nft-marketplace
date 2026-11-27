@@ -39,6 +39,10 @@ export function SignupPage() {
       setStatus(result.verificationSent
         ? "Your account is ready. Check your inbox for a verification link."
         : "Your account is ready, but we could not send the verification email. You can resend it from your dashboard.")
+      if (!result.profileUpdated) {
+        setStatus("Your account is ready, but we could not save the display name. You can still use your account normally.")
+      }
+      setBusy(false)
     } catch (authError) {
       setError(getAuthErrorMessage(authError))
       setBusy(false)
@@ -78,13 +82,13 @@ export function SignupPage() {
 
             {!configured && <p role="alert" className="rounded-xl border border-amber-200/15 bg-amber-100/[0.04] px-3.5 py-3 text-xs leading-5 text-amber-100/80">Firebase is not configured. Add the VITE_FIREBASE settings to your local environment file and restart Vite.</p>}
             {error && <p role="alert" className="rounded-xl border border-rose-300/15 bg-rose-300/[0.05] px-3.5 py-3 text-xs leading-5 text-rose-100/90">{error}</p>}
-            {status && <p role="status" className="rounded-xl border border-lime-200/15 bg-lime-200/[0.04] px-3.5 py-3 text-xs leading-5 text-lime-100/90">{status}</p>}
+            {status && <p role="status" className="rounded-xl border border-red-400/15 bg-red-400/[0.04] px-3.5 py-3 text-xs leading-5 text-red-300/90">{status}</p>}
 
             <Button type="submit" disabled={busy || !configured} className="h-12 w-full rounded-xl text-sm">{busy ? "Creating account..." : "Create account"} <span aria-hidden="true">→</span></Button>
           </form>
 
           <p className="mt-5 text-center text-xs leading-5 text-zinc-500">We will try to send a verification email after you create your account.</p>
-          <p className="mt-6 text-center text-sm text-zinc-500">Already a member? <a href="/login" className="font-medium text-lime-200 underline decoration-lime-200/30 underline-offset-4 transition hover:text-lime-100">Sign in</a></p>
+          <p className="mt-6 text-center text-sm text-zinc-500">Already a member? <a href="/login" className="font-medium text-red-400 underline decoration-red-400/30 underline-offset-4 transition hover:text-red-300">Sign in</a></p>
         </CardContent>
       </Card>
       <a href="/" className="mx-auto mt-5 inline-flex items-center gap-2 text-xs text-zinc-500 transition hover:text-zinc-300"><span aria-hidden="true">←</span> Back to the guild</a>

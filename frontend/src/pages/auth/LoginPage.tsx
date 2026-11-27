@@ -75,7 +75,7 @@ export function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-3">
                 <Label htmlFor="login-password">Password</Label>
-                <button type="button" onClick={handlePasswordReset} disabled={busy || !configured} className="text-xs text-zinc-500 transition hover:text-lime-200 disabled:opacity-40">Forgot password?</button>
+                <button type="button" onClick={handlePasswordReset} disabled={busy || !configured} className="text-xs text-zinc-500 transition hover:text-red-400 disabled:opacity-40">Forgot password?</button>
               </div>
               <div className="relative">
                 <Input id="login-password" name="password" type={showPassword ? "text" : "password"} autoComplete="current-password" placeholder="Enter your password" className="pr-12" required />
@@ -87,7 +87,7 @@ export function LoginPage() {
 
             {!configured && <p role="alert" className="rounded-xl border border-amber-200/15 bg-amber-100/[0.04] px-3.5 py-3 text-xs leading-5 text-amber-100/80">Firebase is not configured. Add the VITE_FIREBASE settings to your local environment file and restart Vite.</p>}
             {error && <p role="alert" className="rounded-xl border border-rose-300/15 bg-rose-300/[0.05] px-3.5 py-3 text-xs leading-5 text-rose-100/90">{error}</p>}
-            {status && <p role="status" className="rounded-xl border border-lime-200/15 bg-lime-200/[0.04] px-3.5 py-3 text-xs leading-5 text-lime-100/90">{status}</p>}
+            {status && <p role="status" className="rounded-xl border border-red-400/15 bg-red-400/[0.04] px-3.5 py-3 text-xs leading-5 text-red-300/90">{status}</p>}
 
             <Button type="submit" disabled={busy || !configured} className="h-12 w-full rounded-xl text-sm">{busy ? "Please wait..." : "Sign in"} <span aria-hidden="true">→</span></Button>
           </form>
@@ -98,7 +98,7 @@ export function LoginPage() {
             <span className="h-px flex-1 bg-white/[0.08]" />
           </div>
           <p className="text-center text-xs leading-5 text-zinc-500">Email and password authentication is handled by Firebase.</p>
-          <p className="mt-7 text-center text-sm text-zinc-500">New to the guild? <a href="/signup" className="font-medium text-lime-200 underline decoration-lime-200/30 underline-offset-4 transition hover:text-lime-100">Create an account</a></p>
+          <p className="mt-7 text-center text-sm text-zinc-500">New to the guild? <a href="/signup" className="font-medium text-red-400 underline decoration-red-400/30 underline-offset-4 transition hover:text-red-300">Create an account</a></p>
         </CardContent>
       </Card>
       <a href="/" className="mx-auto mt-5 inline-flex items-center gap-2 text-xs text-zinc-500 transition hover:text-zinc-300"><span aria-hidden="true">←</span> Back to the guild</a>

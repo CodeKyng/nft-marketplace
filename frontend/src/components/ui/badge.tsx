@@ -2,13 +2,13 @@ import type { HTMLAttributes } from "react"
 import { cn } from "@/lib/utils"
 
 type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
-  variant?: "default" | "outline" | "lime"
+  variant?: "default" | "outline" | "red"
 }
 
 const variants = {
   default: "border-transparent bg-white/10 text-zinc-200",
   outline: "border-white/15 bg-transparent text-zinc-300",
-  lime: "border-lime-300/20 bg-lime-300/10 text-lime-200",
+  red: "border-primary/20 bg-primary/10 text-primary",
 }
 
 export function Badge({ className, variant = "default", ...props }: BadgeProps) {

@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import ThemeToggle from "@/components/theme-toggle"
 
 const nftAddress = import.meta.env.VITE_NFT_ADDRESS as string | undefined
 const marketplaceAddress = import.meta.env.VITE_MARKETPLACE_ADDRESS as string | undefined
@@ -46,7 +47,7 @@ function Icon({ name, className }: { name: IconName; className?: string }) {
 
 function BrandMark() {
   return (
-    <span className="grid size-9 place-items-center rounded-xl border border-lime-200/20 bg-lime-200/10 text-lime-200">
+    <span className="grid size-9 place-items-center rounded-xl border border-red-400/20 bg-red-400/10 text-red-400">
       <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none">
         <path d="m4 8 4 3 4-6 4 6 4-3-2 11H6L4 8Z" fill="currentColor" />
         <path d="M7 16h10" stroke="#11120f" strokeWidth="1.4" />
@@ -173,13 +174,13 @@ function ContractAddress({ label, address }: { label: string; address?: string }
       href={`${explorerUrl}${address}`}
       target="_blank"
       rel="noreferrer"
-      className="group flex min-w-0 items-center justify-between gap-4 rounded-xl border border-white/10 bg-black/20 p-4 transition hover:border-lime-200/30 hover:bg-white/[0.04]"
+      className="group flex min-w-0 items-center justify-between gap-4 rounded-xl border border-white/10 bg-black/20 p-4 transition hover:border-red-400/30 hover:bg-white/[0.04]"
     >
       <span className="min-w-0">
         <span className="mb-1 block text-xs text-zinc-500">{label}</span>
         <span className="block truncate font-mono text-xs text-zinc-200 sm:text-sm">{address}</span>
       </span>
-      <Icon name="arrow-up" className="shrink-0 text-zinc-500 transition group-hover:text-lime-200" />
+      <Icon name="arrow-up" className="shrink-0 text-zinc-500 transition group-hover:text-red-400" />
     </a>
   )
 }
@@ -188,7 +189,7 @@ function SpotlightFeature({ feature }: { feature: (typeof features)[number] }) {
   return (
     <Card
       className={cn(
-        "spotlight-card group relative min-h-52 overflow-hidden transition duration-300 hover:-translate-y-1 hover:border-lime-200/25",
+        "spotlight-card group relative min-h-52 overflow-hidden transition duration-300 hover:-translate-y-1 hover:border-red-400/25",
         feature.className,
       )}
       onPointerMove={(event) => {
@@ -199,7 +200,7 @@ function SpotlightFeature({ feature }: { feature: (typeof features)[number] }) {
     >
       <CardContent className="relative flex h-full flex-col justify-between gap-8 p-6 sm:p-7">
         <div className="flex items-start justify-between">
-          <span className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-lime-200">
+          <span className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-red-400">
             <Icon name={feature.icon} />
           </span>
           <span className="font-mono text-xs text-zinc-600">{feature.number}</span>
@@ -229,7 +230,7 @@ function ArtworkCard({ item, index }: { item: (typeof previews)[number]; index: 
           <span className="block text-sm font-medium text-white">{item.title}</span>
           <span className="mt-1 block text-xs text-zinc-500">Concept artwork · {String(index + 1).padStart(2, "0")}</span>
         </span>
-        <span className="grid size-9 shrink-0 place-items-center rounded-full border border-white/10 text-zinc-400 transition group-hover:border-lime-200/30 group-hover:text-lime-200">
+        <span className="grid size-9 shrink-0 place-items-center rounded-full border border-white/10 text-zinc-400 transition group-hover:border-red-400/30 group-hover:text-red-400">
           <Icon name="arrow-up" className="size-4" />
         </span>
       </CardContent>
@@ -245,16 +246,19 @@ export function PublicPage() {
         <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-5 sm:px-8">
           <a href="#top" className="flex items-center gap-3" aria-label="The Monarch Guild home">
             <BrandMark />
-            <span className="text-sm font-semibold tracking-[0.14em]">MONARCH<span className="text-lime-200">.</span></span>
+            <span className="text-sm font-semibold tracking-[0.14em]">MONARCH<span className="text-red-400">.</span></span>
           </a>
           <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">
             <a href="#collection" className="text-sm text-zinc-400 transition hover:text-white">Collection</a>
+            <a href="/marketplace" className="text-sm text-zinc-400 transition hover:text-white">Marketplace</a>
+            <a href="/merch" className="text-sm text-zinc-400 transition hover:text-white">Guild merch</a>
             <a href="#story" className="text-sm text-zinc-400 transition hover:text-white">The guild</a>
             <a href="#contracts" className="text-sm text-zinc-400 transition hover:text-white">Contracts</a>
           </nav>
           <div className="flex items-center gap-2">
-            <a href={user ? "/account" : "/login"} className={buttonVariants({ variant: "ghost", size: "sm", className: "hidden max-w-36 truncate rounded-full px-3 sm:inline-flex" })}>{user?.displayName || (user ? "Account" : "Log in")}</a>
-            <a href={user ? "/account" : "/signup"} className={buttonVariants({ size: "sm", className: "h-10 rounded-full px-4" })}>{user ? "My account" : "Join the guild"} <Icon name="arrow" className="size-3.5" /></a>
+            <ThemeToggle iconOnly className="rounded-full" />
+            <a href={user ? "/collection" : "/login"} className={buttonVariants({ variant: "ghost", size: "sm", className: "hidden max-w-36 truncate rounded-full px-3 sm:inline-flex" })}>{user?.displayName || (user ? "My collection" : "Log in")}</a>
+            <a href={user ? "/collection" : "/signup"} className={buttonVariants({ size: "sm", className: "h-10 rounded-full px-4" })}>{user ? "My collection" : "Join the guild"} <Icon name="arrow" className="size-3.5" /></a>
           </div>
         </div>
       </header>
@@ -266,20 +270,20 @@ export function PublicPage() {
         </div>
         <div className="mx-auto grid min-h-[690px] max-w-7xl items-center gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[.92fr_1.08fr] lg:gap-8 lg:py-20">
           <div className="relative z-[1] max-w-2xl">
-            <Badge variant="lime" className="mb-7 gap-2 rounded-full px-3 py-1.5">
-              <span className="relative flex size-1.5"><span className="absolute inline-flex size-full animate-ping rounded-full bg-lime-300 opacity-70" /><span className="relative inline-flex size-1.5 rounded-full bg-lime-300" /></span>
+            <Badge variant="red" className="mb-7 gap-2 rounded-full px-3 py-1.5">
+              <span className="relative flex size-1.5"><span className="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-70" /><span className="relative inline-flex size-1.5 rounded-full bg-red-500" /></span>
               LIVE ON BASE SEPOLIA
             </Badge>
             <h1 className="max-w-[720px] text-[clamp(3.4rem,7.5vw,6.5rem)] font-medium leading-[.91] tracking-[-.075em]">
               A guild of
-              <span className="block text-lime-200">rare things.</span>
+              <span className="block text-red-400">rare things.</span>
             </h1>
             <p className="mt-7 max-w-lg text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
               The Monarch Guild is a home for digital artifacts with character. Collect, keep, and carry a little mythology with you.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a href="#collection" className={buttonVariants({ size: "lg", className: "h-12 rounded-full px-6" })}>
-                Discover the collection <Icon name="arrow" className="size-4" />
+              <a href="/marketplace" className={buttonVariants({ size: "lg", className: "h-12 rounded-full px-6" })}>
+                Explore the marketplace <Icon name="arrow" className="size-4" />
               </a>
               <a href="#story" className={buttonVariants({ variant: "ghost", size: "lg", className: "h-12 rounded-full px-5" })}>
                 How it works
@@ -287,13 +291,13 @@ export function PublicPage() {
             </div>
             <div className="mt-12 flex items-center gap-4 border-t border-white/10 pt-6">
               <span className="flex -space-x-2" aria-hidden="true">
-                <span className="size-8 rounded-full border-2 border-[#0b0c0a] bg-gradient-to-br from-lime-200 to-emerald-700" />
+                <span className="size-8 rounded-full border-2 border-[#0b0c0a] bg-gradient-to-br from-red-400 to-emerald-700" />
                 <span className="size-8 rounded-full border-2 border-[#0b0c0a] bg-gradient-to-br from-fuchsia-200 to-indigo-700" />
                 <span className="size-8 rounded-full border-2 border-[#0b0c0a] bg-gradient-to-br from-amber-100 to-rose-700" />
               </span>
               <p className="text-xs leading-5 text-zinc-500">A new chapter in<br /><span className="text-zinc-300">digital collecting.</span></p>
               <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
-                <span className="size-1.5 rounded-full bg-lime-300" /> Testnet is open
+                <span className="size-1.5 rounded-full bg-red-500" /> Testnet is open
               </div>
             </div>
           </div>
@@ -309,7 +313,7 @@ export function PublicPage() {
               <Artwork kind="monarch" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/5" />
               <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/20 bg-black/25 px-3 py-1.5 text-[10px] tracking-wide text-white/80 backdrop-blur-md">
-                <span className="size-1.5 rounded-full bg-lime-200" /> COLLECTION PREVIEW
+                <span className="size-1.5 rounded-full bg-red-400" /> COLLECTION PREVIEW
               </div>
               <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
                 <div>
@@ -320,10 +324,10 @@ export function PublicPage() {
               </div>
             </div>
             <div className="absolute bottom-[9%] left-[3%] flex items-center gap-3 rounded-2xl border border-white/10 bg-[#10110f]/90 p-3.5 shadow-xl backdrop-blur-xl">
-              <span className="grid size-9 place-items-center rounded-xl bg-lime-200/10 text-lime-200"><Icon name="sparkle" /></span>
+              <span className="grid size-9 place-items-center rounded-xl bg-red-400/10 text-red-400"><Icon name="sparkle" /></span>
               <span><span className="block text-xs font-medium">Onchain collection</span><span className="mt-1 block text-[10px] text-zinc-500">Built on Base</span></span>
             </div>
-            <div className="absolute right-[1%] top-[18%] size-16 rounded-full border border-lime-200/15 bg-lime-200/[0.04] blur-[1px]" />
+            <div className="absolute right-[1%] top-[18%] size-16 rounded-full border border-red-400/15 bg-red-400/[0.04] blur-[1px]" />
             <span className="absolute right-[10%] bottom-[15%] text-[10px] font-mono tracking-[.22em] text-zinc-500">001 — 999</span>
           </div>
         </div>
@@ -331,9 +335,9 @@ export function PublicPage() {
 
       <div className="border-y border-white/[0.07] bg-white/[0.02]">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-5 py-5 text-[10px] font-medium tracking-[.22em] text-zinc-500 sm:justify-between sm:px-8">
-          <span>IMAGINED WITH INTENTION</span><span className="hidden size-1 rounded-full bg-lime-200/50 sm:block" />
-          <span>OWNED ONCHAIN</span><span className="hidden size-1 rounded-full bg-lime-200/50 sm:block" />
-          <span>MADE FOR THE CURIOUS</span><span className="hidden size-1 rounded-full bg-lime-200/50 sm:block" />
+          <span>IMAGINED WITH INTENTION</span><span className="hidden size-1 rounded-full bg-red-400/50 sm:block" />
+          <span>OWNED ONCHAIN</span><span className="hidden size-1 rounded-full bg-red-400/50 sm:block" />
+          <span>MADE FOR THE CURIOUS</span><span className="hidden size-1 rounded-full bg-red-400/50 sm:block" />
           <span>THE MONARCH GUILD</span>
         </div>
       </div>
@@ -352,11 +356,11 @@ export function PublicPage() {
       </section>
 
       <section id="story" className="relative border-y border-white/[0.07] bg-[#10110e]">
-        <div className="pointer-events-none absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-lime-200/20 to-transparent" />
+        <div className="pointer-events-none absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-red-400/20 to-transparent" />
         <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32">
           <div className="mb-10 grid gap-5 md:grid-cols-[.8fr_1.2fr] md:items-end">
             <div>
-              <Badge variant="lime" className="mb-4">COLLECT WITH MEANING</Badge>
+              <Badge variant="red" className="mb-4">COLLECT WITH MEANING</Badge>
               <h2 className="text-3xl font-medium tracking-[-.045em] sm:text-5xl">More than an image.<br /><span className="text-zinc-500">A piece of the story.</span></h2>
             </div>
             <p className="max-w-xl text-sm leading-7 text-zinc-400 md:justify-self-end">The Guild brings collectible art and transparent ownership together. Start with a wallet, mint or collect an artifact, and trade through a simple fixed-price marketplace.</p>
@@ -381,24 +385,24 @@ export function PublicPage() {
             <CardContent className="p-4 sm:p-6">
               <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-5">
                 <div className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-[#155eef]/15 text-blue-300"><Icon name="globe" /></span><span><span className="block text-sm font-medium">Base Sepolia</span><span className="mt-1 block text-xs text-zinc-500">Ethereum L2 · Testnet</span></span></div>
-                <Badge variant="lime">CHAIN ID 84532</Badge>
+                <Badge variant="red">CHAIN ID 84532</Badge>
               </div>
               <div className="grid gap-3">
                 <ContractAddress label="NFT collection · ERC-721" address={nftAddress} />
                 <ContractAddress label="Fixed-price marketplace" address={marketplaceAddress} />
               </div>
-              <p className="mt-5 flex items-center gap-2 text-xs text-zinc-500"><span className="size-1.5 rounded-full bg-lime-300" /> Testnet only — use Base Sepolia ETH to interact.</p>
+              <p className="mt-5 flex items-center gap-2 text-xs text-zinc-500"><span className="size-1.5 rounded-full bg-red-500" /> Testnet only — use Base Sepolia ETH to interact.</p>
             </CardContent>
           </Card>
         </div>
       </section>
 
       <section className="px-5 pb-24 sm:px-8 sm:pb-32">
-        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[28px] border border-lime-100/10 bg-[#141710] px-6 py-14 text-center sm:px-12 sm:py-20">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[28px] border border-red-300/10 bg-[#141710] px-6 py-14 text-center sm:px-12 sm:py-20">
           <div className="cta-glow pointer-events-none absolute inset-0" />
           <div className="relative mx-auto max-w-2xl">
-            <span className="mx-auto mb-5 grid size-12 place-items-center rounded-2xl border border-lime-100/15 bg-lime-100/[0.06] text-lime-200"><Icon name="sparkle" className="size-5" /></span>
-            <p className="mb-3 text-xs font-medium tracking-[.22em] text-lime-200">YOUR STORY, YOUR ARTIFACT</p>
+            <span className="mx-auto mb-5 grid size-12 place-items-center rounded-2xl border border-red-300/15 bg-red-300/[0.06] text-red-400"><Icon name="sparkle" className="size-5" /></span>
+            <p className="mb-3 text-xs font-medium tracking-[.22em] text-red-400">YOUR STORY, YOUR ARTIFACT</p>
             <h2 className="text-3xl font-medium tracking-[-.045em] sm:text-5xl">Find your place in the guild.</h2>
             <p className="mx-auto mt-4 max-w-lg text-sm leading-6 text-zinc-400">Explore the collection direction and follow the onchain launch as it takes shape.</p>
             <a href="#collection" className={buttonVariants({ variant: "secondary", className: "mt-7 h-12 rounded-full px-6" })}>Explore the collection <Icon name="arrow" className="size-4" /></a>
@@ -410,7 +414,7 @@ export function PublicPage() {
         <div className="mx-auto flex max-w-7xl flex-col gap-5 px-5 py-7 text-xs text-zinc-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <a href="#top" className="flex items-center gap-2.5 text-zinc-300"><BrandMark /><span className="font-medium tracking-[.14em]">THE MONARCH GUILD</span></a>
           <span>Digital artifacts for a world without borders.</span>
-          <a href="#contracts" className="inline-flex items-center gap-1.5 transition hover:text-lime-200">Built on Base <Icon name="arrow-up" className="size-3" /></a>
+          <a href="#contracts" className="inline-flex items-center gap-1.5 transition hover:text-red-400">Built on Base <Icon name="arrow-up" className="size-3" /></a>
         </div>
       </footer>
     </main>

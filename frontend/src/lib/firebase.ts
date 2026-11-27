@@ -10,7 +10,6 @@ import {
   signOut,
   updateProfile,
   type Auth,
-  type User,
 } from "firebase/auth"
 
 const firebaseConfig = {
@@ -42,7 +41,7 @@ const firebaseApp = firebaseConfigured
 
 export const auth: Auth | null = firebaseApp ? getAuth(firebaseApp) : null
 
-function actionCodeSettings(path: "/account" | "/login") {
+function actionCodeSettings(path: "/marketplace" | "/login") {
   return { url: new URL(path, window.location.origin).toString() }
 }
 
@@ -58,16 +57,21 @@ async function requireAuth() {
 export async function createAccount(email: string, password: string, displayName: string) {
   const firebaseAuth = await requireAuth()
   const credential = await createUserWithEmailAndPassword(firebaseAuth, email, password)
-  await updateProfile(credential.user, { displayName })
+  let profileUpdated = true
+  try {
+    await updateProfile(credential.user, { displayName })
+  } catch {
+    profileUpdated = false
+  }
 
   let verificationSent = true
   try {
-    await sendEmailVerification(credential.user, actionCodeSettings("/account"))
+    await sendEmailVerification(credential.user, actionCodeSettings("/marketplace"))
   } catch {
     verificationSent = false
   }
 
-  return { user: credential.user, verificationSent }
+  return { user: credential.user, verificationSent, profileUpdated }
 }
 
 export async function signInAccount(email: string, password: string) {
@@ -79,10 +83,6 @@ export async function signInAccount(email: string, password: string) {
 export async function sendPasswordReset(email: string) {
   const firebaseAuth = await requireAuth()
   await sendPasswordResetEmail(firebaseAuth, email, actionCodeSettings("/login"))
-}
-
-export async function resendVerification(user: User) {
-  await sendEmailVerification(user, actionCodeSettings("/account"))
 }
 
 export async function signOutAccount() {
@@ -102,7 +102,7 @@ export function getAuthErrorMessage(error: unknown) {
     "auth/invalid-login-credentials": "The email or password is incorrect.",
     "auth/user-not-found": "No account was found for this email.",
     "auth/wrong-password": "The email or password is incorrect.",
-    "auth/weak-password": "Choose a stronger password with at least 6 characters.",
+    "auth/weak-password": "Choose a stronger password with at least 8 characters.",
     "auth/password-does-not-meet-requirements": "Choose a password that meets the Firebase project's password policy.",
     "auth/too-many-requests": "Too many attempts. Wait a moment and try again.",
     "auth/network-request-failed": "Could not reach Firebase. Check your connection and try again.",
