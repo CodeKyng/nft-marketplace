@@ -1,6 +1,6 @@
 /**
- * Contract addresses + ABI fragments for The Monarch Guild
- * Update addresses in .env after redeploying the new NFT.sol
+ * Contract addresses + ABI for The Monarch Guild
+ * Redeploy NFT.sol after pick-and-mint change, then update VITE_NFT_ADDRESS
  */
 
 export const NFT_ADDRESS = (import.meta.env.VITE_NFT_ADDRESS as string | undefined)?.trim() || ""
@@ -9,21 +9,28 @@ export const MONARCH_TOKEN_ADDRESS = (import.meta.env.VITE_MONARCH_TOKEN_ADDRESS
 export const CHAIN_ID = Number(import.meta.env.VITE_CHAIN_ID || 84532)
 export const RPC_URL = (import.meta.env.VITE_BASE_SEPOLIA_RPC_URL as string | undefined)?.trim() || "https://sepolia.base.org"
 
-// Minimal ABI for the updated NFT contract (public mint + reads)
+/** IPFS folder with 1.json … 30.json */
+export const METADATA_BASE =
+  "ipfs://bafybeihlrs7qhfgdzqw66evvin6vd5du5pw7f2b42z5avufmkdvmhymeyu/"
+
+export const MAX_SUPPLY = 30
+
 export const NFT_ABI = [
-  // mint() payable — no URI needed, baseURI is automatic
   {
     type: "function",
     name: "mint",
     stateMutability: "payable",
-    inputs: [],
+    inputs: [{ name: "tokenId", type: "uint256" }],
     outputs: [],
   },
   {
     type: "function",
     name: "ownerMint",
     stateMutability: "nonpayable",
-    inputs: [{ name: "to", type: "address" }],
+    inputs: [
+      { name: "to", type: "address" },
+      { name: "tokenId", type: "uint256" },
+    ],
     outputs: [],
   },
   {
@@ -35,17 +42,17 @@ export const NFT_ABI = [
   },
   {
     type: "function",
-    name: "maxSupply",
+    name: "totalSupply",
     stateMutability: "view",
     inputs: [],
     outputs: [{ type: "uint256" }],
   },
   {
     type: "function",
-    name: "totalSupply",
+    name: "exists",
     stateMutability: "view",
-    inputs: [],
-    outputs: [{ type: "uint256" }],
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ type: "bool" }],
   },
   {
     type: "function",
@@ -71,11 +78,12 @@ export const NFT_ABI = [
   },
 ] as const
 
-// Function selectors (for raw eth_call / eth_sendTransaction)
+// selectors
 export const SELECTORS = {
-  mint: "0x1249c58b",           // mint()
-  mintPrice: "0x6817c76c",      // mintPrice()
-  maxSupply: "0xd5abeb01",      // maxSupply()
-  totalSupply: "0x18160ddd",    // totalSupply()
-  tokenURI: "0xc87b56dd",       // tokenURI(uint256)
+  mint: "0xa0712d68", // mint(uint256)
+  mintPrice: "0x6817c76c",
+  totalSupply: "0x18160ddd",
+  exists: "0x4f558e79", // exists(uint256)
+  ownerOf: "0x6352211e",
+  tokenURI: "0xc87b56dd",
 } as const
