@@ -4,17 +4,67 @@ import { Card } from "@/components/ui/card"
 import { MarketIcon } from "./MarketplaceUI"
 import type { MerchItem } from "./merchData"
 
-export function MerchArtwork({ item, className = "" }: { item: MerchItem; className?: string }) {
-  return <div data-artwork className={`relative isolate grid aspect-[.92] place-items-center overflow-hidden ${className}`} style={{ background: `radial-gradient(ellipse at 50% 40%, ${item.accent}35, transparent 58%), ${item.color}` }}>
-    <span className="absolute inset-0 opacity-15 [background-image:linear-gradient(rgba(255,255,255,.15)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.15)_1px,transparent_1px)] [background-size:28px_28px]"/>
-    {item.design === "hoodie" && <svg viewBox="0 0 240 240" className="relative h-[80%] w-[80%] drop-shadow-[0_18px_20px_rgba(0,0,0,.3)]"><path d="M87 38 64 48 35 69l17 39 18-9v96h100V99l18 9 17-39-29-21-23-10c-4 22-17 33-33 33S91 60 87 38Z" fill={item.color === "#e7e2dc" ? "#faf7f3" : "#292222"} stroke={item.accent} strokeOpacity=".8" strokeWidth="3"/><path d="M87 39c4 21 17 33 33 33s29-12 33-33l-18-9h-30l-18 9Z" fill="none" stroke={item.accent} strokeWidth="4"/><path d="M104 104h32v32h-32z" rx="5" fill={item.accent}/><path d="m109 116 5 4 7-10 7 10 5-4-2 12h-20l-2-12Z" fill="#fff"/></svg>}
-    {item.design === "tee" && <svg viewBox="0 0 240 240" className="relative h-[80%] w-[80%] drop-shadow-[0_18px_20px_rgba(0,0,0,.25)]"><path d="m85 42-25 9-34 23 22 37 21-11v95h102v-95l21 11 22-37-34-23-25-9c-4 17-12 26-25 26s-21-9-25-26Z" fill="#f5f1eb" stroke={item.accent} strokeOpacity=".7" strokeWidth="3"/><path d="M111 87h24v24h-24z" fill={item.accent}/><path d="m113 97 4 3 6-8 6 8 4-3-2 9h-16l-2-9Z" fill="#fff"/></svg>}
-    {item.design === "cap" && <svg viewBox="0 0 240 240" className="relative h-[74%] w-[74%] drop-shadow-[0_18px_20px_rgba(0,0,0,.3)]"><path d="M39 133c4-58 34-91 82-91 45 0 72 35 76 91H39Z" fill="#76242c" stroke={item.accent} strokeWidth="3"/><path d="M40 132c32-15 79-15 127-1 25 7 39 17 35 27-5 12-40 16-78 11-48-6-81-21-84-37Z" fill="#48181e" stroke={item.accent} strokeWidth="3"/><path d="M110 87h24v24h-24z" fill={item.accent}/><path d="m112 97 4 3 6-8 6 8 4-3-2 9h-16l-2-9Z" fill="#fff"/></svg>}
-    {item.design === "print" && <div className="relative aspect-[.75] h-[72%] rotate-[-3deg] border-[10px] border-[#f4eee4] bg-[#17221f] p-3 shadow-2xl"><div className="grid h-full place-items-center overflow-hidden border border-white/10 bg-[radial-gradient(circle_at_50%_42%,#477f68,#111a18_72%)]"><svg viewBox="0 0 160 160" className="w-[68%]"><path d="m25 91-12-53 37 29 30-51 30 51 37-29-12 53-13 38H38L25 91Z" fill={item.accent}/><path d="M48 112h64l-8 23H56l-8-23Z" fill="#111a18"/><circle cx="80" cy="52" r="9" fill="#fff1c4"/></svg></div></div>}
-    <span className="absolute bottom-4 left-4 font-mono text-[10px] tracking-[.2em] text-white/60">MONARCH GUILD · GOODS</span>
-  </div>
+export function MerchArtwork({
+  item,
+  view = "front",
+  className = "",
+}: {
+  item: MerchItem
+  view?: "front" | "back"
+  className?: string
+}) {
+  const src = view === "back" ? item.imageBack : item.imageFront
+
+  return (
+    <div
+      data-artwork
+      className={`relative isolate grid aspect-[.92] place-items-center overflow-hidden bg-[#0f100e] ${className}`}
+    >
+      <img
+        src={src}
+        alt={`${item.name} — ${view} view`}
+        loading="lazy"
+        className="absolute inset-0 size-full object-cover transition duration-500"
+      />
+      <span className="absolute bottom-3 left-3 rounded-full border border-white/10 bg-black/50 px-2.5 py-1 font-mono text-[10px] tracking-[.18em] text-white/70 backdrop-blur">
+        {view === "back" ? "BACK" : "FRONT"}
+      </span>
+    </div>
+  )
 }
 
 export function MerchCard({ item }: { item: MerchItem }) {
-  return <Card className="group overflow-hidden border-white/[.08] bg-[#11120f] transition duration-300 hover:-translate-y-1 hover:border-red-300/20"><a href={`/merch/${item.id}`} className="relative block"><MerchArtwork item={item}/><Badge variant="outline" className="absolute left-3 top-3 border-white/20 bg-black/25 text-white/80 backdrop-blur">{item.category}</Badge><Badge variant="red" className="absolute right-3 top-3">{item.stockLabel}</Badge></a><div className="p-4"><a href={`/merch/${item.id}`} className="text-sm font-medium hover:text-red-300">{item.name}</a><div className="mt-4 flex items-center justify-between border-t border-white/[.07] pt-3"><div><p className="text-[10px] text-zinc-600">PRICE</p><p className="mt-1 text-sm font-medium text-red-300">${item.price.toFixed(2)} USD</p></div><a href={`/merch/${item.id}`} className={buttonVariants({ variant: "outline", size: "sm", className: "rounded-full" })}>View merch <MarketIcon name="arrow"/></a></div></div></Card>
+  return (
+    <Card className="group overflow-hidden border-white/[.08] bg-[#11120f] transition duration-300 hover:-translate-y-1 hover:border-red-300/20">
+      <a href={`/merch/${item.id}`} className="relative block">
+        <MerchArtwork item={item} view="front" />
+        <Badge
+          variant="outline"
+          className="absolute left-3 top-3 border-white/20 bg-black/45 text-white/90 backdrop-blur"
+        >
+          {item.category}
+        </Badge>
+        <Badge variant="red" className="absolute right-3 top-3">
+          {item.stockLabel}
+        </Badge>
+      </a>
+      <div className="p-4">
+        <a href={`/merch/${item.id}`} className="text-sm font-medium hover:text-red-300">
+          {item.name}
+        </a>
+        <div className="mt-4 flex items-center justify-between border-t border-white/[.07] pt-3">
+          <div>
+            <p className="text-[10px] text-zinc-600">PRICE</p>
+            <p className="mt-1 text-sm font-medium text-red-300">${item.price.toFixed(2)} USD</p>
+          </div>
+          <a
+            href={`/merch/${item.id}`}
+            className={buttonVariants({ variant: "outline", size: "sm", className: "rounded-full" })}
+          >
+            View merch <MarketIcon name="arrow" />
+          </a>
+        </div>
+      </div>
+    </Card>
+  )
 }
