@@ -11,16 +11,16 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 /**
  * @title The Monarch Guild (TMG)
- * @notice ERC-721 NFT with paid public minting + automatic baseURI + ERC-2981 royalties (10%)
+ * @notice 30 unique 1-of-1 NFTs. Buyers pick a specific tokenId (1-30) to mint.
+ *         Metadata: ipfs://.../{tokenId}.json
  */
 contract NFT is ERC721URIStorage, Ownable, Pausable, ERC2981, ReentrancyGuard {
     using Strings for uint256;
 
-    uint256 private _nextTokenId;
+    uint256 public constant MAX_SUPPLY = 30;
     uint256 public mintPrice = 0.01 ether;
-    uint256 public maxSupply = 30;
+    uint256 private _mintedCount;
 
-    // Base URI pointing to your Pinata metadata folder
     string private _baseTokenURI = "ipfs://bafybeihlrs7qhfgdzqw66evvin6vd5du5pw7f2b42z5avufmkdvmhymeyu/";
 
     event Minted(address indexed to, uint256 indexed tokenId);
@@ -28,60 +28,63 @@ contract NFT is ERC721URIStorage, Ownable, Pausable, ERC2981, ReentrancyGuard {
     event BaseURIUpdated(string newBaseURI);
 
     constructor() ERC721("The Monarch Guild", "TMG") Ownable(msg.sender) {
-        // Default 10% royalty to the contract owner
-        _setDefaultRoyalty(msg.sender, 1000); // 1000 = 10%
+        _setDefaultRoyalty(msg.sender, 1000); // 10%
     }
 
     // ============ Minting ============
 
     /**
-     * @notice Public mint - URI is set automatically from baseURI
-     * Token ID 0 → 1.json, Token ID 1 → 2.json, etc.
+     * @notice Mint a specific NFT by ID (1-30). Reverts if already minted.
      */
-    function mint() external payable whenNotPaused nonReentrant {
+    function mint(uint256 tokenId) external payable whenNotPaused nonReentrant {
+        require(tokenId >= 1 && tokenId <= MAX_SUPPLY, "Invalid token ID");
+        require(!_exists(tokenId), "Already minted");
         require(msg.value >= mintPrice, "Insufficient payment");
-        require(_nextTokenId < maxSupply, "Max supply reached");
 
-        uint256 tokenId = _nextTokenId;
-        _nextTokenId++;
-
+        _mintedCount++;
         _safeMint(msg.sender, tokenId);
 
         emit Minted(msg.sender, tokenId);
     }
 
     /**
-     * @notice Owner can mint for free (still uses automatic baseURI)
+     * @notice Owner can mint a specific ID for free (team / reserves).
      */
-    function ownerMint(address to) external onlyOwner {
-        require(_nextTokenId < maxSupply, "Max supply reached");
+    function ownerMint(address to, uint256 tokenId) external onlyOwner {
+        require(tokenId >= 1 && tokenId <= MAX_SUPPLY, "Invalid token ID");
+        require(!_exists(tokenId), "Already minted");
 
-        uint256 tokenId = _nextTokenId;
-        _nextTokenId++;
-
+        _mintedCount++;
         _safeMint(to, tokenId);
 
         emit Minted(to, tokenId);
     }
 
-    // ============ URI Logic ============
+    // ============ URI ============
 
     function _baseURI() internal view override returns (string memory) {
         return _baseTokenURI;
     }
 
-    /**
-     * @dev Returns the full token URI.
-     * Maps tokenId 0 → 1.json, tokenId 1 → 2.json, etc.
-     */
+    /// @dev tokenId 1 → 1.json, tokenId 2 → 2.json, ...
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         _requireOwned(tokenId);
+        return string(abi.encodePacked(_baseURI(), tokenId.toString(), ".json"));
+    }
 
-        string memory base = _baseURI();
-        // tokenId 0 becomes "1.json", tokenId 1 becomes "2.json", etc.
-        uint256 metadataId = tokenId + 1;
+    // ============ Views ============
 
-        return string(abi.encodePacked(base, metadataId.toString(), ".json"));
+    function totalSupply() external view returns (uint256) {
+        return _mintedCount;
+    }
+
+    function exists(uint256 tokenId) external view returns (bool) {
+        return _exists(tokenId);
+    }
+
+    // OpenZeppelin v5 uses _ownerOf; keep a small helper for older-style checks
+    function _exists(uint256 tokenId) internal view returns (bool) {
+        return _ownerOf(tokenId) != address(0);
     }
 
     // ============ Admin ============
@@ -115,8 +118,6 @@ contract NFT is ERC721URIStorage, Ownable, Pausable, ERC2981, ReentrancyGuard {
         require(success, "Withdraw failed");
     }
 
-    // ============ Required Overrides ============
-
     function supportsInterface(bytes4 interfaceId)
         public
         view
@@ -124,9 +125,5 @@ contract NFT is ERC721URIStorage, Ownable, Pausable, ERC2981, ReentrancyGuard {
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
-    }
-
-    function totalSupply() external view returns (uint256) {
-        return _nextTokenId;
     }
 }
